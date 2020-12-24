@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package proto;
+
+import "google/protobuf/empty.proto";
+
+option go_package = "github.com/Alma-media/eop09/proto;proto";
+
+service Storage {
+    rpc Load(google.protobuf.Empty) returns(stream Payload) {}
+	rpc Save(stream Payload) returns (google.protobuf.Empty) {}
+}
+
+message Payload {
+    string id = 1;
+
+    Port port = 2;
+}
+
+message Port {
+    string code = 1;
+
+    string name = 2;
+
+    string city = 3;
+
+    string province = 4;
+
+    string country = 5;
+
+    string timezone = 6;
+
+    repeated double coordinates = 7;
+    
+    repeated string alias = 8;
+
+    repeated string regions = 9;
+
+    repeated string unlocs  = 10;
+}

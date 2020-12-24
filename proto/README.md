@@ -1,0 +1,1 @@
+This package contains the content shared across the services (e.g. models, service definitions)
