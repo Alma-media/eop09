@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"errors"
 	"io"
 
 	"github.com/Alma-media/eop09/proto"
@@ -47,7 +48,7 @@ func (caller *PortCaller) DownloadStream(ctx context.Context, stream chan<- *pro
 
 	for {
 		payload, err := client.Recv()
-		if err == io.EOF {
+		if errors.Is(err, io.EOF) {
 			break
 		}
 
