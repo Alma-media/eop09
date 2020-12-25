@@ -15,6 +15,10 @@ test:
 	go vet ./...
 	go test -v -race ./...
 
+build-images:
+	docker build -f Dockerfile.client -t alma/eop09-client:latest .
+	docker build -f Dockerfile.server -t alma/eop09-server:latest .
+
 proto-build: $(PROTODIR)/*.pb.go
 
 %.pb.go: %.proto

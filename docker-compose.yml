@@ -1,0 +1,28 @@
+version: '3'
+services:
+  server:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.server
+    restart: on-failure
+    networks:
+      - services
+  client:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.client
+    restart: on-failure
+    depends_on:
+      - server
+    networks:
+      - services    
+    ports:
+      - 8080:8080
+    volumes:
+      - ~/ports.json:/app/ports.json
+    entrypoint:
+      - /app/client
+      - -file=./ports.json
+      - -grpc-addr=server:5050
+networks:
+  services:

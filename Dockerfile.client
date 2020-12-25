@@ -1,0 +1,17 @@
+FROM golang:1.15 as builder
+
+WORKDIR /go/src/github.com/Alma-media/eop09/
+
+ADD go.mod go.sum ./
+RUN go mod download
+
+ADD . /go/src/github.com/Alma-media/eop09
+RUN CGO_ENABLED=0 GOOS=linux go build -o ./bin/client /go/src/github.com/Alma-media/eop09/client/main.go
+
+FROM alpine:3.11.5
+
+WORKDIR /app
+
+COPY --from=builder /go/src/github.com/Alma-media/eop09/bin/client /app/
+
+ENTRYPOINT ["/app/client"]
