@@ -1,4 +1,4 @@
-package server
+package storage
 
 import (
 	"sync"
@@ -6,21 +6,21 @@ import (
 	"github.com/Alma-media/eop09/proto"
 )
 
-// Storage is a port storage.
-type Storage struct {
+// InMemory is in-memory port storage.
+type InMemory struct {
 	mutex sync.RWMutex
 	data  map[string]*proto.Port
 }
 
-// NewStorage creates a new in-memory port storage.
-func NewStorage() *Storage {
-	return &Storage{
+// NewInMemory creates a new in-memory port storage.
+func NewInMemory() *InMemory {
+	return &InMemory{
 		data: make(map[string]*proto.Port),
 	}
 }
 
 // Save a single port.
-func (storage *Storage) Save(id string, port *proto.Port) {
+func (storage *InMemory) Save(id string, port *proto.Port) {
 	storage.mutex.Lock()
 	defer storage.mutex.Unlock()
 
@@ -28,7 +28,7 @@ func (storage *Storage) Save(id string, port *proto.Port) {
 }
 
 // Each calls provided callback function for each available pair id/port.
-func (storage *Storage) Each(fn func(key string, port *proto.Port) error) error {
+func (storage *InMemory) Each(fn func(key string, port *proto.Port) error) error {
 	storage.mutex.Lock()
 	defer storage.mutex.Unlock()
 

@@ -1,4 +1,4 @@
-package server
+package service
 
 import (
 	"io"
@@ -9,26 +9,33 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+// PortStorage is a port repository providing basic data operation.
+type PortStorage interface {
+	Save(key string, port *proto.Port)
+	Each(func(key string, port *proto.Port) error) error
+}
+
 // PortServer is the server that provides operations on Port(s).
 type PortServer struct {
-	*Storage
+	PortStorage
 
 	proto.UnimplementedStorageServer
 }
 
 // NewPortServer returns a new PortServer.
-func NewPortServer(storage *Storage) *PortServer {
-	return &PortServer{Storage: storage}
+func NewPortServer(storage PortStorage) *PortServer {
+	return &PortServer{
+		PortStorage: storage,
+	}
 }
 
 // Load is a server-streaming RPC to return all available ports.
 // TODO:
-// - advanced logging
-// - avoid logging to stderr/stdout (performance issue)
+// - logging
 func (server *PortServer) Load(_ *empty.Empty, stream proto.Storage_LoadServer) error {
 	ctx := stream.Context()
 
-	if err := server.Storage.Each(
+	if err := server.PortStorage.Each(
 		func(id string, port *proto.Port) error {
 			select {
 			case <-ctx.Done():
@@ -73,7 +80,7 @@ func (server *PortServer) Save(stream proto.Storage_SaveServer) error {
 				return err
 			}
 
-			server.Storage.Save(pair.Id, pair.Port)
+			server.PortStorage.Save(pair.Id, pair.Port)
 		}
 
 		return nil
