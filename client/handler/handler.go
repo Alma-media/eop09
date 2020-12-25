@@ -18,7 +18,7 @@ type Downloader interface {
 // TODO: proper error handling.
 func CreateGetAllHandler(caller Downloader, encode codec.EncoderFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var stream = make(chan *proto.Payload)
+		stream := make(chan *proto.Payload)
 
 		go func() {
 			defer close(stream)

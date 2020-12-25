@@ -54,24 +54,26 @@ var testPorts = []*proto.Payload{
 }
 
 func Test_Encode(t *testing.T) {
-	var (
-		buff   bytes.Buffer
-		stream = make(chan *proto.Payload)
-	)
+	t.Run("test if provided source is properly encoded to JSON", func(t *testing.T) {
+		var (
+			buff   bytes.Buffer
+			stream = make(chan *proto.Payload)
+		)
 
-	go func() {
-		for _, payload := range testPorts {
-			stream <- payload
+		go func() {
+			for _, payload := range testPorts {
+				stream <- payload
+			}
+
+			close(stream)
+		}()
+
+		if err := Encode(&buff, stream); err != nil {
+			t.Fatalf("unexpected error: %s", err)
 		}
 
-		close(stream)
-	}()
-
-	if err := Encode(&buff, stream); err != nil {
-		t.Fatalf("unexpected error: %s", err)
-	}
-
-	if actual := strings.Replace(buff.String(), "\n", "", -1); actual != testJSON {
-		t.Errorf("output:\n%s\nwas expected to be:\n%s\n", actual, testJSON)
-	}
+		if actual := strings.ReplaceAll(buff.String(), "\n", ""); actual != testJSON {
+			t.Errorf("output:\n%s\nwas expected to be:\n%s\n", actual, testJSON)
+		}
+	})
 }

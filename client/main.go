@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -9,7 +10,6 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
 	grpcCaller "github.com/Alma-media/eop09/client/caller/grpc"
 	"github.com/Alma-media/eop09/client/codec/json"
@@ -20,7 +20,6 @@ import (
 
 var (
 	fileName string
-	timeout  time.Duration
 	httpPort int
 	grpcAddr string
 )
@@ -90,7 +89,7 @@ func main() {
 
 	go func() {
 		log.Printf("starting HTTP server on port %s", httpPort)
-		if err := server.ListenAndServe(); err != http.ErrServerClosed {
+		if err := server.ListenAndServe(); errors.Is(err, http.ErrServerClosed) {
 			errs <- fmt.Errorf("failed to start HTTP server: %w", err)
 		}
 	}()

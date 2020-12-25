@@ -9,7 +9,7 @@ bootstrap:
 	@echo "Do not forget to install protoc C++ libraries manually"
 
 lint:
-	golangci-lint run --enable-all --disable lll,gochecknoglobals,dupl,interfacer,gochecknoinits,godox,funlen,gocognit,wsl,wrapcheck
+	golangci-lint run --enable-all --disable lll,gochecknoglobals,dupl,interfacer,gochecknoinits,godox,funlen,gocognit,wsl,wrapcheck,exhaustivestruct,godot,testpackage,tparallel,paralleltest,gocritic
 
 test:
 	go vet ./...

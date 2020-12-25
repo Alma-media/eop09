@@ -78,7 +78,6 @@ func (caller *PortCaller) DownloadStream(ctx context.Context, stream chan<- *pro
 		case <-ctx.Done():
 			return ctx.Err()
 		}
-
 	}
 
 	return nil

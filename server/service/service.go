@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"io"
 
 	"github.com/Alma-media/eop09/proto"
@@ -17,9 +18,9 @@ type PortStorage interface {
 
 // PortServer is the server that provides operations on Port(s).
 type PortServer struct {
-	PortStorage
-
 	proto.UnimplementedStorageServer
+
+	PortStorage
 }
 
 // NewPortServer returns a new PortServer.
@@ -72,7 +73,7 @@ func (server *PortServer) Save(stream proto.Storage_SaveServer) error {
 			}
 
 			pair, err := stream.Recv()
-			if err == io.EOF {
+			if errors.Is(err, io.EOF) {
 				break
 			}
 
