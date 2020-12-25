@@ -1,12 +1,15 @@
-package client
+package json
 
 import (
 	"reflect"
 	"strings"
 	"testing"
 
+	"github.com/Alma-media/eop09/client/codec"
 	"github.com/Alma-media/eop09/proto"
 )
+
+var _ codec.DecoderFunc = Decode
 
 var testJSON = `{"MYTBA":{"code":"55700","name":"Tanjong Baran","city":"Tanjong Baran","province":"Sarawak","country":"Malaysia","timezone":"Asia/Kuala_Lumpur","coordinates":[113.9769444,4.593333299999999],"unlocs":["MYTBA"]},"NOBVK":{"code":"40313","name":"Brevik","city":"Brevik","province":"Telemark","country":"Norway","timezone":"Europe/Oslo","coordinates":[9.7,59.05],"unlocs":["NOBVK"]},"TRBDM":{"code":"48963","name":"Bandirma","city":"Bandirma","province":"Balikesir","country":"Turkey","timezone":"Europe/Istanbul","coordinates":[27.97,40.35],"unlocs":["TRBDM"]}}`
 

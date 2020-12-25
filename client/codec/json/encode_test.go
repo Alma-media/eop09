@@ -1,12 +1,15 @@
-package client
+package json
 
 import (
 	"bytes"
 	"strings"
 	"testing"
 
+	"github.com/Alma-media/eop09/client/codec"
 	"github.com/Alma-media/eop09/proto"
 )
+
+var _ codec.EncoderFunc = Encode
 
 var testPorts = []*proto.Payload{
 	{
