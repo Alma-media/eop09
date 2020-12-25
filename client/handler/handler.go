@@ -15,6 +15,7 @@ type Downloader interface {
 }
 
 // CreateGetAllHandler creates an HTTP handler to return the entire port list.
+// TODO: proper error handling.
 func CreateGetAllHandler(caller Downloader, encode codec.EncoderFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var stream = make(chan *proto.Payload)

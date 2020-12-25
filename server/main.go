@@ -19,6 +19,11 @@ func init() {
 	flag.Parse()
 }
 
+// TODO:
+// - TLS
+// - server side interceptors
+// - reflection API
+// - graceful shutdown
 func main() {
 	var (
 		repository = storage.NewInMemory()

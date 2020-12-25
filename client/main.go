@@ -37,6 +37,14 @@ func init() {
 	}
 }
 
+// TODO:
+// - https
+// - use advanced routing
+// - http middleware (jwt, auth, timeout etc)
+// - choose one of available codecs according to the content type
+// - TLS for grpc
+// - grpc interceptors
+// - configure with ENV variables
 func main() {
 	file, err := os.Open(fileName)
 	if err != nil {
@@ -54,7 +62,7 @@ func main() {
 		httpPort    = fmt.Sprintf(":%d", httpPort)
 		stream      = make(chan *proto.Payload)
 		ctx, cancel = context.WithCancel(context.Background())
-		caller      = grpcCaller.NewPortCaller(conn)
+		caller      = grpcCaller.NewPortCaller(ctx.Done(), conn)
 		errs        = make(chan error)
 	)
 
@@ -94,7 +102,8 @@ func main() {
 	case <-term:
 		cancel()
 
-		if err := server.Shutdown(ctx); err != nil {
+		// TODO: pass a proper context
+		if err := server.Shutdown(context.Background()); err != nil {
 			errs <- fmt.Errorf("failed to stop HTTP server: %w", err)
 		}
 

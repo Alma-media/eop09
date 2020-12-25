@@ -5,20 +5,26 @@ import (
 	"errors"
 	"io"
 
+	"github.com/Alma-media/eop09/client/caller"
 	"github.com/Alma-media/eop09/proto"
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc"
 )
 
+var _ caller.Caller = (*PortCaller)(nil)
+
 // PortCaller is an RPC service caller.
 type PortCaller struct {
 	proto.StorageClient
+	stopChan <-chan struct{}
 }
 
 // NewPortCaller returns a new caller for RPC service.
-func NewPortCaller(cc *grpc.ClientConn) *PortCaller {
-	service := proto.NewStorageClient(cc)
-	return &PortCaller{service}
+func NewPortCaller(stop <-chan struct{}, cc *grpc.ClientConn) *PortCaller {
+	return &PortCaller{
+		StorageClient: proto.NewStorageClient(cc),
+		stopChan:      stop,
+	}
 }
 
 // UploadStream calls streaming RPC to upload the data.
@@ -28,15 +34,24 @@ func (caller *PortCaller) UploadStream(ctx context.Context, stream <-chan *proto
 		return err
 	}
 
-	for payload := range stream {
-		if err := client.Send(payload); err != nil {
-			return err
+	for {
+		select {
+		case <-caller.stopChan:
+			return nil
+		case <-ctx.Done():
+			return ctx.Err()
+		case payload, ok := <-stream:
+			if !ok {
+				_, err = client.CloseAndRecv()
+
+				return err
+			}
+
+			if err := client.Send(payload); err != nil {
+				return err
+			}
 		}
 	}
-
-	_, err = client.CloseAndRecv()
-
-	return err
 }
 
 // DownloadStream calls streaming RPC to fetch the data.
@@ -56,7 +71,14 @@ func (caller *PortCaller) DownloadStream(ctx context.Context, stream chan<- *pro
 			return err
 		}
 
-		stream <- payload
+		select {
+		case <-caller.stopChan:
+			return nil
+		case stream <- payload:
+		case <-ctx.Done():
+			return ctx.Err()
+		}
+
 	}
 
 	return nil
