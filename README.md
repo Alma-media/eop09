@@ -6,6 +6,21 @@
 
 Golang microservices. Task for "two hours".
 
+## Installation
+```bash
+$ go get github.com/Alma-media/eop09
+```
+
+## Run
+- server:
+```bash
+$ go run main.go -port 5050
+```
+- client:
+```bash
+$  go run main.go -file path/to/file -grpc-addr localhost:5050 -http-port 8080
+```
+
 ## Further improvements
 
 ### Client
